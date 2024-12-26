@@ -58,11 +58,11 @@ run_command() {
 # Banner
 print_banner() {
     echo -e "${MAGENTA}${BOLD}"
-    echo "╔═══════════════════════════════════════════════════╗"
-    echo "║              GENIEACS INSTALLER                   ║"
-    echo "║               For Ubuntu 22.04                    ║"
-    echo "║              Codex by Kangsigi                    ║"
-    echo "╚═══════════════════════════════════════════════════╝"
+    echo "╔═══════════════════════════════════════════════╗"
+    echo "║              GENIEACS INSTALLER               ║"
+    echo "║               For Ubuntu 22.04                ║"
+    echo "║             Codex by @Kangsigi.id             ║"
+    echo "╚═══════════════════════════════════════════════╝"
     echo -e "${RESET}"
 }
 
@@ -156,5 +156,23 @@ cat << EOF > /etc/logrotate.d/genieacs
 EOF
 
 run_command "logrotate -f /etc/logrotate.d/genieacs" "[$(( ++current ))/$steps] Menyiapkan rotasi log" "$current" "$total_steps"
+
+# Function to check service status
+check_service_status() {
+    local service_name="$1"
+    if systemctl is-active --quiet "$service_name"; then
+        echo -e "${GREEN}${service_name} -> status: running${RESET}"
+    else
+        echo -e "${RED}${service_name} -> status: stopped${RESET}"
+    fi
+}
+
+# Display installed components and their status
+echo -e "\n${BLUE}Ringkasan Instalasi:${RESET}"
+services=("mongod" "genieacs-cwmp" "genieacs-nbi" "genieacs-fs" "genieacs-ui")
+
+for service in "${services[@]}"; do
+    check_service_status "$service"
+done
 
 echo -e "\n${GREEN}${BOLD}Instalasi berhasil diselesaikan!${RESET}"
